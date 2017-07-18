@@ -13,10 +13,10 @@ mappings in Universal ++= {
 addCommandAlias("pkg", ";universal:packageZipTarball")
 
 //Config - Root
-lazy val root = (project in file(".")).settings(name := "adx-k2hdfs-adxLog", commonSettings, librarySettings)
+lazy val root = (project in file(".")).settings(name := "adx-k2hdfs-logs", commonSettings, librarySettings)
 
 lazy val commonSettings = Seq(
-  organization := "com.zzcm.adx",
+  organization := "com.chinamobiad.adx",
   scalaVersion := "2.11.8",
   version      := "0.1.0"
 )
