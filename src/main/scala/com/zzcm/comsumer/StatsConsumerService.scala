@@ -12,8 +12,8 @@ import akka.pattern.ask
 import akka.stream.Materializer
 import akka.util.Timeout
 
-import com.zzcm.fileActor.OriginMsgActor
-import com.zzcm.fileActor.OriginMsgActor.OriginMsg
+import com.zzcm.actor.ConsumeMsgActor
+import com.zzcm.actor.ConsumeMsgActor.OriginMsg
 import org.apache.kafka.common.serialization.StringDeserializer
 
 
@@ -25,18 +25,28 @@ class StatsConsumerService(implicit system: ActorSystem, materializer: Materiali
 
   val subScriptTopics = system.settings.config.getStringList("kafka.consumer.topics").asScala.toSet
   val group = system.settings.config.getString("kafka.consumer.groupId")
-  val rootPath = system.settings.config.getString("adx-logs.file.rootPath")
-  val fileName = system.settings.config.getString("adx-logs.file.fileName")
+
+  val originalRootPath = system.settings.config.getString("adx-logs.file.original.rootPath")
+  val originalFileName = system.settings.config.getString("adx-logs.file.original.fileName")
+  val formateRootPath = system.settings.config.getString("adx-logs.file.formate.rootPath")
+  val formateFileName = system.settings.config.getString("adx-logs.file.formate.fileName")
+  val formateUploadPath = system.settings.config.getString("adx-logs.file.formate.hdfsPath")
 
 
-
+  val fileInfoMap = Map(
+    ("originalRootPath" -> originalRootPath)
+  ,("originalFileName" -> originalFileName)
+  ,("formateRootPath" -> formateRootPath)
+  ,("formateFileName"-> formateFileName)
+  ,("formateUploadPath" -> formateUploadPath)
+  )
 
   object StatsLogConsumerPipeLine extends  CousumePipeLine[String,String]{
     val consumerKeyDeSerializer = new StringDeserializer
     val consumerValueDeSerializer = new StringDeserializer
     override def consumMsg(msgSeq: Seq[CommittableMessage[String, String]]): Future[Seq[CommittableOffset]] = {
                  implicit val timeout = Timeout(1 seconds) // needed for `?` below
-                 val oriMsgActor = system.actorOf(OriginMsgActor.props(rootPath,fileName))
+                 val oriMsgActor = system.actorOf(ConsumeMsgActor.props(fileInfoMap))
                  val offsetBatch: Future[Seq[CommittableOffset]] = (oriMsgActor ? OriginMsg(msgSeq)).mapTo[Seq[ConsumerMessage.CommittableOffset]]
                   offsetBatch
     }

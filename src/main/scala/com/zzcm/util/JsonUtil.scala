@@ -27,7 +27,7 @@ object JsonUtil {
   }
 
   /**
-    * 将对象转换为对象
+    * 将对象转换为字符串
     * @param s
     * @return
     */
