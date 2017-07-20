@@ -29,8 +29,9 @@ class FormateMsgActor(rootPath: String, fileName: String) extends Actor {
             .map(value => (TimestampPath.extractTimestamp(value) -> value)) //(timestamp->record)
             .groupBy(_._1)
             .map(x => (x._1, x._2.map(_._2))) //(timestamp->List(record))
-            .filter(elem => elem._1 != -1)   //对于没有正确提取到时间戳的数据,直接丢弃
-            .foreach(elem => FileUtil.writeToFile(elem._2.mkString("\n"), TimestampPath.initTimestampFile(elem._1, rootPath, fileName)))
+            .foreach(elem => FileUtil.writeToFile(elem._2.mkString("\n"), TimestampPath.initFormateTimestampFile(elem._1, rootPath, fileName)))
+
+
       })
       }.recover {
         case e: Exception =>{

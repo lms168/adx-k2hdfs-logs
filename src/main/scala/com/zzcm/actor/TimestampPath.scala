@@ -1,6 +1,6 @@
 package com.zzcm.actor
 
-import java.io.File
+import java.io.{File, FileWriter}
 import java.util.Calendar
 
 /**
@@ -50,19 +50,75 @@ object TimestampPath {
 //  }
 //
 
+
+
   /**
     * 创建文件
     *
     * @param timestamp
     * @return
     */
-   def initTimestampFile(timestamp: Long, rootPath: String, fileName: String): File = {
+  def initFormateTimestampFile(timestamp: Long, rootPath: String, fileName: String): File = {
+    var filePrefix = "0"
     val time = timestamp - timestamp % 3600000 //按照小时进行切割
     val c = Calendar.getInstance()
     c.setTimeInMillis(time)
 
     val timeElemList =  c.get(Calendar.YEAR) ::  formateTimeElemStyle(c.get(Calendar.MONTH) + 1) :: formateTimeElemStyle(c.get(Calendar.DATE)) :: formateTimeElemStyle(c.get(Calendar.HOUR_OF_DAY)) :: Nil
     val timePath = timeElemList.mkString("/")
+
+
+    val systemNow = System.currentTimeMillis()
+    val systemCalendar = Calendar.getInstance()
+    systemCalendar.setTimeInMillis(systemNow)
+
+
+   if ((systemNow>timestamp) && (systemCalendar.get(Calendar.HOUR_OF_DAY) - c.get(Calendar.HOUR_OF_DAY))>0){
+     filePrefix = "1"
+   }
+
+    val finalFileName = filePrefix.concat("-").concat(fileName)
+
+
+   var file =  new File(rootPath + timePath, finalFileName)
+
+    if (!file.exists()) {  //不存在则创建文件
+      if (!file.getParentFile.exists()) {
+        file.getParentFile.mkdirs();
+      }
+      file.createNewFile()
+    }else if (finalFileName.startsWith("1")){
+        //非正点写入的数据理论上都会写入以1为前缀的文件,但是如果文件正在上传,则上传程序会在该文件夹下面创建一个1-tmp为前缀的文件
+        //如果存在1-tmp前缀文件(说明前缀为1的文件正在执行上传文件的操作),则要将数据优先写入到1-temp开头的文件
+        // demo非整点上传的例子:例如3点接受到了timestap值为2点的数据,则这些数据就会写入1为前缀的文件
+        val listFile: Array[File] = file.getParentFile.listFiles().filter(f=>f.isFile).filter(file=>file.getName.startsWith("1-temp"))
+        if (listFile!=null && listFile.length==1){
+          file = listFile(0)
+        }
+    }
+
+
+    file
+
+  }
+
+
+  /**
+    * 创建文件
+    *
+    * @param timestamp
+    * @return
+    */
+   def initOriginalTimestampFile(timestamp: Long, rootPath: String, fileName: String): File = {
+
+    val time = timestamp - timestamp % 3600000 //按照小时进行切割
+    val c = Calendar.getInstance()
+    c.setTimeInMillis(time)
+
+    val timeElemList =  c.get(Calendar.YEAR) ::  formateTimeElemStyle(c.get(Calendar.MONTH) + 1) :: formateTimeElemStyle(c.get(Calendar.DATE)) :: formateTimeElemStyle(c.get(Calendar.HOUR_OF_DAY)) :: Nil
+    val timePath = timeElemList.mkString("/")
+
+
 
      new File(rootPath + timePath, fileName)
 
