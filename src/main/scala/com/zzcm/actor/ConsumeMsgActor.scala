@@ -1,16 +1,12 @@
 package com.zzcm.actor
 
-import java.io.{File, FileWriter}
-import java.util.Calendar
-
 import akka.actor.{Actor, Props}
 import akka.event.Logging
 import akka.kafka.ConsumerMessage.{CommittableMessage, CommittableOffset}
 
-import com.zzcm.actor.FormateMsgActor.FormateMsg
 import com.zzcm.actor.ConsumeMsgActor.OriginMsg
+import com.zzcm.actor.FormateMsgActor.FormateMsg
 import com.zzcm.actor.OriginalMsgActor.OriginalMsg
-import com.zzcm.util.FileUtil
 
 //接收的数据类型
 object ConsumeMsgActor {

@@ -1,5 +1,11 @@
 package com.zzcm.actor
 
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+
+import scala.util.Try
+
 import akka.actor.{Actor, Props}
 
 import com.zzcm.actor.OriginalMsgActor.OriginalMsg
@@ -16,8 +22,22 @@ object OriginalMsgActor{
   */
 class OriginalMsgActor(rootPath: String, fileName: String) extends Actor{
   override def receive: Receive = {
-    case OriginalMsg(values)=>{
-      FileUtil.saveMsg(values,rootPath,fileName)  //将接收到的数据保存到文件中
+    case OriginalMsg(values)=> {
+      Try {
+          values.map(value => (TimestampPath.extractTimestamp(value) -> value)) //(timestamp->record)
+          .toList
+          .groupBy(_._1)
+          .map(x => (x._1, x._2.map(_._2)))
+            .foreach(elem => FileUtil.writeToFile(elem._2.mkString("\n"), TimestampPath.initTimestampFile(elem._1, rootPath, fileName)))
+      } recover {
+        case e: Exception =>{
+          val sdf = new SimpleDateFormat("yyyy-MM-dd")
+          val datePath = sdf.format(new Date());
+          val file= new File(rootPath.concat(datePath), "originalError.txt")
+          FileUtil.writeToFile(values.mkString("\n"),file)
+        }
+        case _ => println("未知错误")
+      }
     }
   }
 }
