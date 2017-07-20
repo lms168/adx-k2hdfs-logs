@@ -32,7 +32,11 @@ lazy val librarySettings = {
     "com.typesafe.akka" %% "akka-stream" % "2.4.2",
     "org.json4s" %% "json4s-core" % "3.2.10",
     "org.json4s" %% "json4s-native" % "3.2.10",
-    "org.json4s" %% "json4s-jackson" % "3.2.10"
+    "org.json4s" %% "json4s-jackson" % "3.2.10",
+
+    "com.typesafe.akka" %% "akka-slf4j" % "2.4.2",
+    "ch.qos.logback" % "logback-classic" % "1.1.2",
+    "com.typesafe.akka" %% "akka-testkit" % "2.4.2"
   ) ++ Seq(
     "simpleclient"
     , "simpleclient_hotspot"

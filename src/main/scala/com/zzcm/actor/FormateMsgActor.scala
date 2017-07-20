@@ -7,6 +7,7 @@ import java.util.Date
 import scala.util.Try
 
 import akka.actor.{Actor, Props}
+import akka.event.Logging
 
 import com.zzcm.actor.FormateMsgActor.FormateMsg
 import com.zzcm.model.StatLogScala
@@ -18,6 +19,7 @@ import com.zzcm.util.{FileUtil, JsonUtil}
   * 将接受到的数据格式化,并且将其保存到本地,留待之后上传到hdfs做数据分析
   */
 class FormateMsgActor(rootPath: String, fileName: String) extends Actor {
+  val log = Logging(context.system, this)
   override def receive: Receive = {
     case FormateMsg(values) => {
       Try{
@@ -32,12 +34,13 @@ class FormateMsgActor(rootPath: String, fileName: String) extends Actor {
       })
       }.recover {
         case e: Exception =>{
+          log.error(e,s"FormateMsgActor写入数据失败:msg=${values.mkString("\n")}")
           val sdf = new SimpleDateFormat("yyyy-MM-dd")
           val datePath = sdf.format(new Date());
           val file= new File(rootPath.concat(datePath), "formateError.txt")
           FileUtil.writeToFile(values.mkString("\n"),file)
         }
-        case _ => println("未知错误")
+        case _ =>  log.error("FormateMsgActor遇到了未知错误!!!!!!!!!!!!!!!!!!!!!!!!!")
       }
     }
   }
