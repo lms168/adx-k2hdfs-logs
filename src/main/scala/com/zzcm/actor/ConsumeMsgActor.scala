@@ -24,7 +24,7 @@ class ConsumeMsgActor(fileInfoMap: Map[String, String]) extends Actor{
   override def receive: Receive = {
     case OriginMsg(msgSeq) => {
       val offsetWithValue: Seq[(CommittableOffset, String)] = msgSeq.map((msg) =>{
-        log.info("topic:"+msg.record.topic()+"\t partition:"+msg.record.partition()+"\t offset="+ msg.committableOffset+"\t key:"+msg.record.key()+"\t value="+msg.record.value())
+//        log.info("topic:"+msg.record.topic()+"\t partition:"+msg.record.partition()+"\t offset="+ msg.committableOffset+"\t key:"+msg.record.key()+"\t value="+msg.record.value())
         (msg.committableOffset,msg.record.value())
       })
       val offsets: Seq[CommittableOffset] = offsetWithValue.map(_._1)

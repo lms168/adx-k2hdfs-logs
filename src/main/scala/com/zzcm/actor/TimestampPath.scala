@@ -155,7 +155,7 @@ object TimestampPath {
     * @param elem
     * @return
     */
-   def formateTimeElemStyle(elem: Int) = {
+    def formateTimeElemStyle(elem: Int) = {
     if(elem<10) "0"+elem else elem.toString
   }
 

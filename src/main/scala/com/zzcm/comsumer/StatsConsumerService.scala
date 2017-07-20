@@ -41,6 +41,8 @@ class StatsConsumerService(implicit system: ActorSystem, materializer: Materiali
   ,("formateUploadPath" -> formateUploadPath)
   )
 
+
+
   object StatsLogConsumerPipeLine extends  CousumePipeLine[String,String]{
     val consumerKeyDeSerializer = new StringDeserializer
     val consumerValueDeSerializer = new StringDeserializer

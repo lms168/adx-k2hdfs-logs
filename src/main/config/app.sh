@@ -126,7 +126,7 @@ if [ "$INDEX" = "1" ];then
 	for jar in `find ./* -print |grep jar` ;do
 		if [ "$JAR_LIST" = "" ];then
 		  JAR_LIST="$JAR_LIST$PROJECT_PATH${jar//.\///}"
-		else  
+		else
 		  JAR_LIST="$JAR_LIST:$PROJECT_PATH${jar//.\///}"
 		fi
 	done
@@ -159,23 +159,10 @@ if [ "$INDEX" = "1" ];then
 			echo "启动失败!"
 			echo `cat ERROR`
 			exit 1
-		else  
+		else
 			echo "启动成功!进程号:$PID"
 			echo $PID > $PROJECT_PATH"/PID"
 			rm -rf $PROJECT_PATH"/ERROR"
 	fi
 fi
-
-
-
-
-
-
-
-
-
-
-
-
-
 

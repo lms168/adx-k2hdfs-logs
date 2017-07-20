@@ -8,7 +8,7 @@ package com.zzcm.model
   */
 
 final case class StatLogScala(
-   createTime: Long = 1500344599469l
+   createTime: Long = System.currentTimeMillis
   , ecpm: Double = .0
   , pubAppAdId: Int = 0
   , pubId: Int = 0

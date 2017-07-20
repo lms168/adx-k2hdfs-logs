@@ -1,9 +1,9 @@
 package com.zzcm
 
-import example.Hello
+import com.zzcm.simulator.CosumerSimulator
 
 object App extends App {
 
-  Hello.main(args)
+  CosumerSimulator.main(args)
 
 }
