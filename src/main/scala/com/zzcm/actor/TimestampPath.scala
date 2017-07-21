@@ -73,12 +73,14 @@ object TimestampPath {
     systemCalendar.setTimeInMillis(systemNow)
 
 
-   if ((systemNow>timestamp) && (systemCalendar.get(Calendar.HOUR_OF_DAY) - c.get(Calendar.HOUR_OF_DAY))>0){
+    //计算当前系统时间与接受到的数据中的时间戳时间间隔几天
+    val diffDay = ((systemNow - systemNow % 3600000)-time)/3600000
+    //当时间戳与记录的时间戳相隔1天 或者 都在当天但是当前小时要大于记录中时间戳代表的时间
+   if (diffDay>=1 || (diffDay==0&&(systemCalendar.get(Calendar.HOUR_OF_DAY) - c.get(Calendar.HOUR_OF_DAY))>0)){
      filePrefix = "1"
    }
 
     val finalFileName = filePrefix.concat("-").concat(fileName)
-
 
    var file =  new File(rootPath + timePath, finalFileName)
 
@@ -142,7 +144,7 @@ object TimestampPath {
       }
       case None => {
 //        log.error(s"数据msg=$record 未提取到时间戳,请查询发送的数据格式是否正确,该条记录将不会保存到日志文件中")
-        println(s"数据msg=$record 未提取到时间戳,请查询发送的数据格式是否正确,该条记录将不会保存到日志文件中")
+//        println(s"数据msg=$record 未提取到时间戳,请查询发送的数据格式是否正确,该条记录将不会保存到日志文件中")
         throw new Exception((s"数据msg=$record 未提取到时间戳,请查询发送的数据格式是否正确,该条记录将不会保存到日志文件中"))
       }
     }
