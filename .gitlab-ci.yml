@@ -1,0 +1,33 @@
+variables:
+  PROJECT_NAME: 'adx-k2hdfs-logs'
+
+local:
+  script:
+    - sbt -Dconf=local clean pkg
+    - pwd
+    - rm -rf /home/output/$PROJECT_NAME/local
+    - mkdir -p /home/output/$PROJECT_NAME/local
+    - cp ./target/universal/* /home/output/$PROJECT_NAME/local
+test:
+  script:
+    - sbt -Dconf=test clean pkg
+    - pwd
+    - rm -rf /home/output/$PROJECT_NAME/test
+    - mkdir -p /home/output/$PROJECT_NAME/test
+    - cp ./target/universal/* /home/output/$PROJECT_NAME/test
+public:
+  script:
+    - sbt -Dconf=public clean pkg
+    - pwd
+    - rm -rf /home/output/$PROJECT_NAME/public
+    - mkdir -p /home/output/$PROJECT_NAME/public
+    - cp ./target/universal/* /home/output/$PROJECT_NAME/public
+product:
+  script:
+    - sbt -Dconf=product clean pkg
+    - pwd
+    - rm -rf /home/output/$PROJECT_NAME/product
+    - mkdir -p /home/output/$PROJECT_NAME/product
+    - cp ./target/universal/* /home/output/$PROJECT_NAME/product
+
+
