@@ -22,25 +22,53 @@ lazy val commonSettings = Seq(
 )
 
 lazy val librarySettings = {
-  libraryDependencies ++= Seq(
-    "com.typesafe.slick" %% "slick" % "3.2.0",
-    "com.typesafe.slick" %% "slick-hikaricp" % "3.2.0",
-    "mysql" % "mysql-connector-java" % "5.1.18",
-    "com.typesafe" % "config" % "1.2.1",
-    "com.typesafe.akka" %% "akka-stream-kafka" % "0.16",
-    "com.typesafe.akka" %% "akka-stream" % "2.4.2",
-    "org.json4s" %% "json4s-core" % "3.2.10",
-    "org.json4s" %% "json4s-native" % "3.2.10",
-    "org.json4s" %% "json4s-jackson" % "3.2.10"
-    , "com.typesafe.akka" %% "akka-slf4j" % "2.4.2",
-    "ch.qos.logback" % "logback-classic" % "1.1.2",
-    "com.typesafe.akka" %% "akka-testkit" % "2.4.2"
-  ) ++ Seq(
+  val akkaV = "2.4.17"
+  val akkaHttpV = "10.0.4"
+  val slickV = "3.2.0"
+  val hadoopV = "2.7.3"
+
+  libraryDependencies ++= (Seq(
+    "akka-slf4j"
+    , "akka-actor"
+    , "akka-stream"
+  ).map("com.typesafe.akka" %% _ % akkaV) ++ Seq(
+    "akka-http-spray-json"
+    , "akka-http-core"
+    , "akka-http"
+  ).map("com.typesafe.akka" %% _ % akkaHttpV) ++ Seq(
     "simpleclient"
     , "simpleclient_hotspot"
     , "simpleclient_common"
-    , "simpleclient_pushgateway"
-  ).map("io.prometheus" % _ % "0.0.16")
+  ).map("io.prometheus" % _ % "0.0.16") ++ Seq(
+    "ch.qos.logback"  %  "logback-classic"  % "1.1.7"
+    , "org.slf4j"     %  "log4j-over-slf4j" % "1.7.21"
+  ) ++ Seq(
+    // "org.typelevel" %% "cats" % "0.9.0"
+    "com.typesafe.akka"       %% "akka-stream-kafka"      % "0.14" exclude("log4j", "log4j") exclude("org.slf4j","slf4j-log4j12")
+    , "com.typesafe.slick"  %% "slick"                 % slickV
+    , "com.typesafe.slick"  %% "slick-hikaricp"        % slickV
+    , "joda-time"           %  "joda-time"             % "2.9.4"
+    , "org.mariadb.jdbc"    %  "mariadb-java-client"   % "1.3.7"
+    , "org.json4s"          %% "json4s-jackson"        % "3.4.2"
+    , "com.fasterxml.jackson.core" % "jackson-databind" % "2.8.4"
+
+    // , "org.apache.spark"    %% "spark-core"            % "2.1.0" % "provided"
+    // , "org.apache.spark"    %% "spark-sql"            % "2.1.0"  // %  "provided"
+    // , "org.apache.hadoop"   % "hadoop-client"          % "2.7.3"
+
+  )++ Seq(
+    "hadoop-common"
+    , "hadoop-hdfs"
+    , "hadoop-client"
+  ).map("org.apache.hadoop" % _ % hadoopV)
+    ).map(_.excludeAll(
+    // ExclusionRule("commons-logging", "commons-logging"),
+    // ExclusionRule("log4j", "log4j"),
+    ExclusionRule("org.log4j")
+  ))
+
+
+
 }
 
 

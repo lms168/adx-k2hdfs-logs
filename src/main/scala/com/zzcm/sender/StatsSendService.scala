@@ -6,6 +6,7 @@ import akka.actor.ActorSystem
 import akka.stream.scaladsl.SourceQueueWithComplete
 import akka.stream.{Materializer, QueueOfferResult}
 
+import com.zzcm.config.K2hdfsConfig
 import com.zzcm.model.StatLogScala
 import com.zzcm.util.JsonUtil
 import org.apache.kafka.common.serialization.StringSerializer
@@ -27,7 +28,8 @@ class StatsSendService(implicit system: ActorSystem, materializer: Materializer)
     override def valueTransfer(t: StatLogScala): String = JsonUtil.fromObject(List(t))
   }
 
-  private [this] val topic = system.settings.config.getString("kafka.topic-out")
+  val productConfig = K2hdfsConfig().productConfig
+  private [this] val topic = productConfig.topicOut
 
   /**
     * 发送统计数据

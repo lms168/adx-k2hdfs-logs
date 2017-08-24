@@ -6,6 +6,22 @@ import scala.util.matching.Regex
 
 object Test extends App {
 
+
+
+
+    //
+    //    val result: Option[String] = pattern.findFirstIn(record)
+    //    val createTime = result match {
+    //        case Some(x) =>{
+    //            val pattern(tag,value) = x
+    //            value
+    //        }
+    //        case None => 0
+    //    }
+
+
+
+
     var filePrefix = "0"
 
     val timestamp = 1500594602000l
@@ -148,4 +164,6 @@ object Test extends App {
 //
 //    //not found
 ////    println("test")
+
+
 }

@@ -14,6 +14,7 @@ import akka.util.Timeout
 
 import com.zzcm.actor.ConsumeMsgActor
 import com.zzcm.actor.ConsumeMsgActor.OriginMsg
+import com.zzcm.config.K2hdfsConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 
 
@@ -23,23 +24,9 @@ import org.apache.kafka.common.serialization.StringDeserializer
   */
 class StatsConsumerService(implicit system: ActorSystem, materializer: Materializer, ec:ExecutionContext) {
 
-  val subScriptTopics = system.settings.config.getStringList("kafka.consumer.topics").asScala.toSet
-  val group = system.settings.config.getString("kafka.consumer.groupId")
+  val subScriptTopics = K2hdfsConfig().consumerConfig.subScriptTopics
+  val group = K2hdfsConfig().consumerConfig.group
 
-  val originalRootPath = system.settings.config.getString("adx-logs.file.original.rootPath")
-  val originalFileName = system.settings.config.getString("adx-logs.file.original.fileName")
-  val formateRootPath = system.settings.config.getString("adx-logs.file.formate.rootPath")
-  val formateFileName = system.settings.config.getString("adx-logs.file.formate.fileName")
-  val formateUploadPath = system.settings.config.getString("adx-logs.file.formate.hdfsPath")
-
-
-  val fileInfoMap = Map(
-    ("originalRootPath" -> originalRootPath)
-  ,("originalFileName" -> originalFileName)
-  ,("formateRootPath" -> formateRootPath)
-  ,("formateFileName"-> formateFileName)
-  ,("formateUploadPath" -> formateUploadPath)
-  )
 
 
 
@@ -48,7 +35,7 @@ class StatsConsumerService(implicit system: ActorSystem, materializer: Materiali
     val consumerValueDeSerializer = new StringDeserializer
     override def consumMsg(msgSeq: Seq[CommittableMessage[String, String]]): Future[Seq[CommittableOffset]] = {
                  implicit val timeout = Timeout(1 seconds) // needed for `?` below
-                 val oriMsgActor = system.actorOf(ConsumeMsgActor.props(fileInfoMap))
+                 val oriMsgActor = system.actorOf(ConsumeMsgActor.props())
                  val offsetBatch: Future[Seq[CommittableOffset]] = (oriMsgActor ? OriginMsg(msgSeq)).mapTo[Seq[ConsumerMessage.CommittableOffset]]
                   offsetBatch
     }

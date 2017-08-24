@@ -9,6 +9,8 @@ import com.zzcm.model.StatLogScala
 import com.zzcm.sender.StatsSendService
 import org.slf4j.LoggerFactory
 
+
+
 /**
   * Created by lms on 17-7-15.
   */
@@ -24,13 +26,13 @@ object SenderSimulator extends App{
   val statsService = new StatsSendService
 
 
-  println("===============================开始发送数据了==================================")
+  logger.info("===============================开始发送数据了==================================")
   val stat = new StatLogScala()
   for (i <- 1 to 100){
     val newStat = stat.copy(reqId = String.valueOf(i))
     statsService.statisticOperator(newStat)
   }
-  println("=================================发送100条数据结束=============================================")
+  logger.info("=================================发送100条数据结束=============================================")
   system.terminate()
 
 }
