@@ -61,7 +61,7 @@ lazy val librarySettings = {
     )
     .map(_.excludeAll(
 
-     ExclusionRule("commons-logging", "commons-logging")   //不要将jcl的api再桥接到slf上面去,否则可能导致死循环stackoverflow
+//     ExclusionRule("commons-logging", "commons-logging")   //不要将jcl的api再桥接到slf上面去,否则可能导致死循环stackoverflow
       , ExclusionRule("log4j","log4j")                    //因为使用了logback的使用故不需要log4j的实现包
       , ExclusionRule("org.slf4j","slf4j-log4j12")        //因为使用了logback,logback直接实现了sfl4j的接口,不需要转换器
   ))
