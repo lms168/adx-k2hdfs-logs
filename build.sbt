@@ -40,11 +40,12 @@ lazy val librarySettings = {
     , "simpleclient_hotspot"
     , "simpleclient_common"
   ).map("io.prometheus" % _ % "0.0.16") ++ Seq(
+    //显示的导入slf4j的接口和logback的实现类
     "ch.qos.logback"  %  "logback-classic"  % "1.1.7"
-    , "org.slf4j"     %  "log4j-over-slf4j" % "1.7.21"
+    ,"ch.qos.logback" % "logback-core" % "1.1.7"
+    ,"org.slf4j" % "slf4j-api" % "1.7.25"
   ) ++ Seq(
-    // "org.typelevel" %% "cats" % "0.9.0"
-    "com.typesafe.akka"       %% "akka-stream-kafka"      % "0.14" exclude("log4j", "log4j") exclude("org.slf4j","slf4j-log4j12")
+    "com.typesafe.akka"       %% "akka-stream-kafka"      % "0.14"
     , "com.typesafe.slick"  %% "slick"                 % slickV
     , "com.typesafe.slick"  %% "slick-hikaricp"        % slickV
     , "joda-time"           %  "joda-time"             % "2.9.4"
@@ -52,22 +53,18 @@ lazy val librarySettings = {
     , "org.json4s"          %% "json4s-jackson"        % "3.4.2"
     , "com.fasterxml.jackson.core" % "jackson-databind" % "2.8.4"
 
-    // , "org.apache.spark"    %% "spark-core"            % "2.1.0" % "provided"
-    // , "org.apache.spark"    %% "spark-sql"            % "2.1.0"  // %  "provided"
-    // , "org.apache.hadoop"   % "hadoop-client"          % "2.7.3"
-
   )++ Seq(
     "hadoop-common"
     , "hadoop-hdfs"
     , "hadoop-client"
   ).map("org.apache.hadoop" % _ % hadoopV)
-    ).map(_.excludeAll(
-    // ExclusionRule("commons-logging", "commons-logging"),
-    // ExclusionRule("log4j", "log4j"),
-    ExclusionRule("org.log4j")
+    )
+    .map(_.excludeAll(
+
+     ExclusionRule("commons-logging", "commons-logging")   //不要将jcl的api再桥接到slf上面去,否则可能导致死循环stackoverflow
+      , ExclusionRule("log4j","log4j")                    //因为使用了logback的使用故不需要log4j的实现包
+      , ExclusionRule("org.slf4j","slf4j-log4j12")        //因为使用了logback,logback直接实现了sfl4j的接口,不需要转换器
   ))
-
-
 
 }
 

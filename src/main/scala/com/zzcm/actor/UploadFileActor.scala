@@ -8,6 +8,7 @@ import akka.actor.{Actor, ActorSystem, Props}
 import akka.event.Logging
 
 import com.zzcm.actor.UploadFileActor.PathMsg
+import com.zzcm.actor.UploadStatusActor.{EndUpload, StartUpload}
 import com.zzcm.config.K2hdfsConfig
 import com.zzcm.upload.HdfsClient
 
@@ -108,11 +109,14 @@ class UploadFileActor() extends Actor{
         val lastModifyTime = file.lastModified()
         //如果5分钟没有变更过,则开始更改文件名(加上上传标记),然后上传文件
         if (now - lastModifyTime > uploadWaitTime) {
+          val uploadStatusActor = context.actorOf(UploadStatusActor.props)
           val newFile = new File(path, uploadedSign.concat(file.getName))
           file.renameTo(newFile)
           val hdfsClient = new HdfsClient
           hdfsClient.init(defaultFS,user)
+          uploadStatusActor ! StartUpload(path.concat(file.getName))
           hdfsClient.uploadFileToHdfs(path.concat(File.separator).concat(newFile.getName), destHdfsPath)
+          uploadStatusActor ! EndUpload(path.concat(file.getName))
           Some(file.getName)
         }else{
           None

@@ -37,15 +37,9 @@ class UploadStream(interval: FiniteDuration)
       .mapConcat(_ => genSegment)
       .mapAsync(1) { case (path) => {
         val uploadFileActor = system.actorOf(UploadFileActor.props())
-        val f: Future[Any] = uploadFileActor ? PathMsg(path)
-        f.mapTo[Option[String]]
+         uploadFileActor ? PathMsg(path)
       }
       }
-      .map(x=>x match {
-            case Some(x) => println(x)
-            case None =>
-          }
-       )
       .withAttributes(ActorAttributes.supervisionStrategy(decider))
       .initialTimeout(1.minutes)
       .to(Sink.ignore)

@@ -11,7 +11,7 @@
   <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>logs/adx-data-roller.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>logs/adx-reporting.%d{yyyy-MM-dd-HH, UTC}.log</fileNamePattern>
+      <fileNamePattern>logs/adx-k2hdfs-logs.%d{yyyy-MM-dd-HH, UTC}.log</fileNamePattern>
       <maxHistory>60</maxHistory>
     </rollingPolicy>
     <encoder>
