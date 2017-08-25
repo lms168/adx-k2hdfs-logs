@@ -3,9 +3,11 @@ package com.zzcm.upload
 import scala.collection.immutable.IndexedSeq
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
 
 import akka.actor.{ActorSystem, Cancellable}
+import akka.event.slf4j.Logger
 import akka.pattern._
 import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.{ActorAttributes, Materializer, Supervision}
@@ -13,7 +15,9 @@ import akka.util.Timeout
 
 import com.zzcm.actor.UploadFileActor
 import com.zzcm.actor.UploadFileActor.PathMsg
+import com.zzcm.simulator.SenderSimulator._
 import com.zzcm.util.DateUtil
+import org.slf4j.LoggerFactory
 /**
   * Created by lms on 17-8-17.
   */
@@ -24,8 +28,10 @@ object UploadStream{
 
 class UploadStream(interval: FiniteDuration)
                   (implicit system: ActorSystem, mt: Materializer, ec: ExecutionContext) {
+
+
   implicit val timeout: Timeout = akka.util.Timeout(10.minutes)
-  def flow()(implicit ec: ExecutionContext): Cancellable = {
+  def flow()(implicit ec: ExecutionContext) =
     Source
       .tick(0.seconds, interval, ())
       .mapConcat(_ => genSegment)
@@ -34,7 +40,8 @@ class UploadStream(interval: FiniteDuration)
         val f: Future[Any] = uploadFileActor ? PathMsg(path)
         f.mapTo[Option[String]]
       }
-      }.map(x=>x match {
+      }
+      .map(x=>x match {
             case Some(x) => println(x)
             case None =>
           }
@@ -42,8 +49,7 @@ class UploadStream(interval: FiniteDuration)
       .withAttributes(ActorAttributes.supervisionStrategy(decider))
       .initialTimeout(1.minutes)
       .to(Sink.ignore)
-      .run()
-  }
+
 
 
  private[this] def genSegment: IndexedSeq[String] = {

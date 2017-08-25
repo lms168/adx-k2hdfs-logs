@@ -14,17 +14,17 @@ import scala.concurrent.ExecutionContext.Implicits.global._
 /**
   * Created by lms on 17-8-24.
   */
-class UploadSimulator {
+object UploadSimulator extends App{
   val logger = LoggerFactory.getLogger(getClass)
 
-  implicit val system: ActorSystem = ActorSystem("consumActor")
+  implicit val system: ActorSystem = ActorSystem("uploadActor")
 
   implicit val mat: ActorMaterializer = ActorMaterializer()
 
   implicit val ec: ExecutionContextExecutor = system.dispatcher
 
   val uploadStream =  UploadStream(10.seconds)
-  val uploadStreamFlow = uploadStream.flow()
+  val uploadStreamFlow = uploadStream.flow().run()
   sys.addShutdownHook(uploadStreamFlow.cancel())
 
 }

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
 object Main extends App{
   val logger = LoggerFactory.getLogger(getClass)
 
-  implicit val system: ActorSystem = ActorSystem("consumActor")
+  implicit val system: ActorSystem = ActorSystem("consumAndUploadActor")
 
   implicit val mat: ActorMaterializer = ActorMaterializer()
 
@@ -27,6 +27,6 @@ object Main extends App{
 
 
   val uploadStream =  UploadStream(10.seconds)
-  val uploadStreamFlow = uploadStream.flow()
+  val uploadStreamFlow = uploadStream.flow().run()
   sys.addShutdownHook(uploadStreamFlow.cancel())
 }
