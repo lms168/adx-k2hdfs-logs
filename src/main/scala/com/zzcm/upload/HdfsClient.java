@@ -51,6 +51,10 @@ public class HdfsClient {
         Path src = new Path(localPath);
         // 要上传到hdfs的目标路径
         Path dst = new Path(hdfsPath);
+
+        if (!fs.exists(dst)){
+            fs.mkdirs(dst);
+        }
         fs.copyFromLocalFile(src, dst);
         fs.close();
     }

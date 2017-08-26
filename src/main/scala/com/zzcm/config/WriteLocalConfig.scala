@@ -27,7 +27,7 @@ object WriteLocalConfig {
       , formateFileName = c.getString("formate.fileName")
       , onTimeFileSign = c.getString("onTimeFileSign")
       , uploadedSign = c.getString("uploadedSign")
-      , uploadWaitTime = c.getLong("uploadWaitTime") )
+      , uploadWaitTime = c.getDuration("uploadWaitTime").toMillis )
   }
   def apply()(implicit  system: ActorSystem): WriteLocalConfig = this.apply(system.settings.config)
 }

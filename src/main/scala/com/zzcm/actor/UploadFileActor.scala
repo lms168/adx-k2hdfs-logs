@@ -50,6 +50,7 @@ class UploadFileActor() extends Actor{
     case PathMsg(timePath) => {
 
       val path  = srcPath.concat(timePath)
+      val destPath = destHdfsPath.concat(timePath)
       //   /home/lms/adx-logs/original/2017/08/23/06
 //       log.info(s"path======================$path")
 
@@ -65,7 +66,7 @@ class UploadFileActor() extends Actor{
         val onTimeFiles = unUploadFiles.filter(x => x.getName.startsWith(onTimeFileSign))
         if (onTimeFiles != null && onTimeFiles.length > 0) {
           val onTimeFile = onTimeFiles(0)
-          val uploadFileName = upload(path, onTimeFile, defaultFS, user)
+          val uploadFileName = upload(path, destPath , onTimeFile, defaultFS, user)
           uploadFileName match {
             case Some(fileName) =>  uploadedfileNames += fileName
             case _ =>
@@ -88,7 +89,7 @@ class UploadFileActor() extends Actor{
               y
             }
           })._2
-          val uploadFileName = upload(path, crossFile, defaultFS, user)
+          val uploadFileName = upload(path, destPath, crossFile, defaultFS, user)
           uploadFileName match {
             case Some(fileName) =>  uploadedfileNames += fileName
             case _ =>
@@ -104,19 +105,19 @@ class UploadFileActor() extends Actor{
     }
 
 
-      def upload(path: String, file: File, defaultFS: String, user: String) = {
+      def upload(srcPath: String, destPath: String, file: File, defaultFS: String, user: String) = {
         val now = System.currentTimeMillis()
         val lastModifyTime = file.lastModified()
         //如果5分钟没有变更过,则开始更改文件名(加上上传标记),然后上传文件
         if (now - lastModifyTime > uploadWaitTime) {
           val uploadStatusActor = context.actorOf(UploadStatusActor.props)
-          val newFile = new File(path, uploadedSign.concat(file.getName))
+          val newFile = new File(srcPath, uploadedSign.concat(file.getName))
           file.renameTo(newFile)
           val hdfsClient = new HdfsClient
           hdfsClient.init(defaultFS,user)
-          uploadStatusActor ! StartUpload(path.concat(file.getName))
-          hdfsClient.uploadFileToHdfs(path.concat(File.separator).concat(newFile.getName), destHdfsPath)
-          uploadStatusActor ! EndUpload(path.concat(file.getName))
+          uploadStatusActor ! StartUpload(srcPath.concat(file.getName))
+          hdfsClient.uploadFileToHdfs(srcPath.concat(File.separator).concat(newFile.getName), destPath)
+          uploadStatusActor ! EndUpload(srcPath.concat(file.getName))
           Some(file.getName)
         }else{
           None
