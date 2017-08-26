@@ -115,9 +115,9 @@ class UploadFileActor() extends Actor{
           file.renameTo(newFile)
           val hdfsClient = new HdfsClient
           hdfsClient.init(defaultFS,user)
-          uploadStatusActor ! StartUpload(srcPath.concat(file.getName))
+          uploadStatusActor ! StartUpload(srcPath.concat(File.separator).concat(file.getName))
           hdfsClient.uploadFileToHdfs(srcPath.concat(File.separator).concat(newFile.getName), destPath)
-          uploadStatusActor ! EndUpload(srcPath.concat(file.getName))
+          uploadStatusActor ! EndUpload(srcPath.concat(File.separator).concat(file.getName))
           Some(file.getName)
         }else{
           None

@@ -26,7 +26,10 @@ object Main extends App{
   statsConsumerService.consumeStats()
 
 
-  val uploadStream =  UploadStream(10.seconds)
-  val uploadStreamFlow = uploadStream.flow().run()
-  sys.addShutdownHook(uploadStreamFlow.cancel())
+  val uploadSwitch = system.settings.config.getBoolean("upload.switch");
+  if (uploadSwitch) {
+    val uploadStream = UploadStream(10.seconds)
+    val uploadStreamFlow = uploadStream.flow().run()
+    sys.addShutdownHook(uploadStreamFlow.cancel())
+  }
 }
