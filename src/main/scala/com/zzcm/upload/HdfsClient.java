@@ -33,7 +33,7 @@ public class HdfsClient {
         /**
          * 参数优先级： 1、客户端代码中设置的值 2、classpath下的用户自定义配置文件 3、然后是服务器的默认配置
          */
-        //conf.set("dfs.replication", "3");
+        conf.set("dfs.replication", "1");
 
         // 获取一个hdfs的访问客户端，根据参数，这个实例应该是DistributedFileSystem的实例
         // fs = FileSystem.get(conf);
