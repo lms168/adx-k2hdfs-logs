@@ -91,7 +91,7 @@ object TimestampPath {
     * @return
     */
    def extractTimestamp(record: String):Long = {
-    val pattern = """"(createTime"):(\d+)""".r
+    val pattern = """"(timestamp"):(\d+)""".r
     val result: Option[String] = pattern.findFirstIn(record)
     val timeStamp = result match {
       case Some(x) =>{

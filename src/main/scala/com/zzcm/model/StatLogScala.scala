@@ -8,7 +8,7 @@ package com.zzcm.model
   */
 
 final case class StatLogScala(
-   createTime: Long = 1503633300000l//System.currentTimeMillis
+   createTime: Long = 1504075325000l//System.currentTimeMillis
   , ecpm: Double = .0
   , pubAppAdId: Int = 0
   , pubId: Int = 0
@@ -34,4 +34,8 @@ final case class StatLogScala(
   , uaMd5: String = null
   , calcCount: Int = 1
   , time: Long = System.currentTimeMillis
-)
+   , interactionType :Int = 0         //广告类型
+   , pkgName     : String = null          //包名
+   , title       : String = null          //标题
+
+                             )

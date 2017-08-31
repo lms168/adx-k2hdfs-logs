@@ -10,7 +10,10 @@ import com.typesafe.config.Config
 /**
   * Created by lms on 17-8-23.
   */
-final case class  WriteLocalConfig(originalRootPath: String
+final case class  WriteLocalConfig(
+                                   originalSwitch: Boolean
+                                   ,formateSwitch: Boolean
+                                   , originalRootPath: String
                                    , originalFileName: String
                                    , formateRootPath: String
                                    , formateFileName: String
@@ -21,7 +24,12 @@ final case class  WriteLocalConfig(originalRootPath: String
 object WriteLocalConfig {
   def apply(config: Config): WriteLocalConfig = {
     val c = config.getConfig("adx-logs.file")
-    WriteLocalConfig(originalRootPath = c.getString("original.rootPath")
+    WriteLocalConfig(
+
+
+       originalSwitch= c.getBoolean("original.switch")
+      ,formateSwitch = c.getBoolean("formate.switch")
+      ,originalRootPath = c.getString("original.rootPath")
       , originalFileName= c.getString("original.fileName")
       , formateRootPath = c.getString("formate.rootPath")
       , formateFileName = c.getString("formate.fileName")

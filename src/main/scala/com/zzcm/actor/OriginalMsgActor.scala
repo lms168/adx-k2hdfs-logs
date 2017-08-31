@@ -30,7 +30,7 @@ class OriginalMsgActor(rootPath: String, fileName: String) extends Actor{
           .toList
           .groupBy(_._1)
           .map(x => (x._1, x._2.map(_._2)))
-            .foreach(elem => FileUtil.writeToFile(elem._2.mkString("\n"), TimestampPath.initOriginalTimestampFile(elem._1, rootPath, fileName)))
+            .foreach(elem => FileUtil.writeToFile(elem._2.mkString("\n"), TimestampPath.initFormateTimestampFile(elem._1, rootPath, fileName)))
       } recover {
         case e: Exception =>{
           log.error(e,s"OriginalMsgActor:msg=${values.mkString("\n")}")

@@ -29,7 +29,7 @@ object SenderSimulator extends App{
   logger.info("===============================开始发送数据了==================================")
   val stat = new StatLogScala()
   for (i <- 1 to 100){
-    val newStat = stat.copy(reqId = String.valueOf(i))
+    val newStat = stat.copy(reqId = String.valueOf(i),operator = "CLICK",interactionType = 1,pkgName = "ssssss")
     statsService.statisticOperator(newStat)
   }
   logger.info("=================================发送100条数据结束=============================================")

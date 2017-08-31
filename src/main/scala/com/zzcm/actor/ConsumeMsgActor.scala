@@ -30,6 +30,9 @@ class ConsumeMsgActor() extends Actor{
   val formateRootPath =  writeLocalConfig.formateRootPath
   val formateFileName =  writeLocalConfig.formateFileName
 
+  val originalSwitch = writeLocalConfig.originalSwitch
+  val formateSwitch = writeLocalConfig.formateSwitch
+
 
   override def receive: Receive = {
     case OriginMsg(msgSeq) => {
@@ -42,13 +45,16 @@ class ConsumeMsgActor() extends Actor{
 
 
       //保存原始数据
-      val originalMsgActor = context.actorOf(OriginalMsgActor.props(originalRootPath,originalFileName))
-      originalMsgActor ! OriginalMsg(values)
+      if (originalSwitch) {
+        val originalMsgActor = context.actorOf(OriginalMsgActor.props(originalRootPath, originalFileName))
+        originalMsgActor ! OriginalMsg(values)
+      }
 
       //将数据格式化后保存
-      val formateMsgActor = context.actorOf(FormateMsgActor.props(formateRootPath,formateFileName))
-      formateMsgActor ! FormateMsg(values)
-
+      if (formateSwitch) {
+        val formateMsgActor = context.actorOf(FormateMsgActor.props(formateRootPath, formateFileName))
+        formateMsgActor ! FormateMsg(values)
+      }
       sender() ! offsets
     }
   }
