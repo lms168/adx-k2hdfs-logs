@@ -70,17 +70,17 @@ object TimestampPath {
   }
 
 
-  /**
-    * 创建文件
-    *
-    * @param timestamp
-    * @return
-    */
-   def initOriginalTimestampFile(timestamp: Long, rootPath: String, fileName: String): File = {
-    val time = timestamp - timestamp % 3600000 //按照小时进行切割
-    val timePath = DateUtil.formateTimestampPath(time)
-     new File(rootPath + timePath, fileName)
-  }
+//  /**
+//    * 创建文件
+//    *
+//    * @param timestamp
+//    * @return
+//    */
+//   def initOriginalTimestampFile(timestamp: Long, rootPath: String, fileName: String): File = {
+//    val time = timestamp - timestamp % 3600000 //按照小时进行切割
+//    val timePath = DateUtil.formateTimestampPath(time)
+//     new File(rootPath + timePath, fileName)
+//  }
 
 
 
@@ -90,8 +90,8 @@ object TimestampPath {
     * @param record
     * @return
     */
-   def extractTimestamp(record: String):Long = {
-    val pattern = """"(timestamp"):(\d+)""".r
+   def extractTimestamp(record: String, timeField: String):Long = {
+     val pattern = s""""($timeField"):(\\d+)""".r
     val result: Option[String] = pattern.findFirstIn(record)
     val timeStamp = result match {
       case Some(x) =>{

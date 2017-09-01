@@ -6,6 +6,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 
 import com.zzcm.comsumer.StatsConsumerService
+import com.zzcm.config.K2hdfsConfig
 import org.slf4j.LoggerFactory
 
 /**
@@ -20,7 +21,9 @@ object CosumerSimulator extends App{
 
   implicit val ec: ExecutionContextExecutor = system.dispatcher
 
-  val statsConsumerService = new StatsConsumerService()
+  val subScriptTopics = K2hdfsConfig().consumerConfig.subScriptTopics
+  val group = K2hdfsConfig().consumerConfig.group
+  val statsConsumerService = new StatsConsumerService(subScriptTopics, group)
 
   statsConsumerService.consumeStats()
 

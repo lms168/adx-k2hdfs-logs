@@ -14,19 +14,19 @@ import com.zzcm.util.FileUtil
 
 object OriginalMsgActor{
   case class  OriginalMsg(values: Seq[String])
-  def props(rootPath: String, fileName: String) = Props(new OriginalMsgActor(rootPath, fileName))
+  def props(rootPath: String, fileName: String, timeField: String ) = Props(new OriginalMsgActor(rootPath, fileName, timeField))
 
 }
 
 /**
   * Created by lms on 17-7-19.
   */
-class OriginalMsgActor(rootPath: String, fileName: String) extends Actor{
+class OriginalMsgActor(rootPath: String, fileName: String, timeField: String ) extends Actor{
   val log = Logging(context.system, this)
   override def receive: Receive = {
     case OriginalMsg(values)=> {
       Try {
-          values.map(value => (TimestampPath.extractTimestamp(value) -> value)) //(timestamp->record)
+          values.map(value => (TimestampPath.extractTimestamp(value,"createTime") -> value)) //(timestamp->record)
           .toList
           .groupBy(_._1)
           .map(x => (x._1, x._2.map(_._2)))

@@ -18,6 +18,12 @@ import com.zzcm.util.{FileUtil, JsonUtil}
   * Created by lms on 17-7-18.
   * 将接受到的数据格式化,并且将其保存到本地,留待之后上传到hdfs做数据分析
   */
+object FormateMsgActor {
+  case class FormateMsg(values: Seq[String])
+  def props(rootPath: String, fileName: String) = Props(new FormateMsgActor(rootPath, fileName))
+}
+
+
 class FormateMsgActor(rootPath: String, fileName: String) extends Actor {
   val log = Logging(context.system, this)
   override def receive: Receive = {
@@ -26,7 +32,7 @@ class FormateMsgActor(rootPath: String, fileName: String) extends Actor {
       values.foreach(x =>{
          val statList: List[StatLogScala] = JsonUtil.toObject[List[StatLogScala]](x)
           statList.map(x => JsonUtil.fromObject(x))
-            .map(value => (TimestampPath.extractTimestamp(value) -> value)) //(timestamp->record)
+            .map(value => (TimestampPath.extractTimestamp(value,"timestamp") -> value)) //(timestamp->record)
             .groupBy(_._1)
             .map(x => (x._1, x._2.map(_._2))) //(timestamp->List(record))
             .foreach(elem => FileUtil.writeToFile(elem._2.mkString("\n"), TimestampPath.initFormateTimestampFile(elem._1, rootPath, fileName)))
@@ -48,7 +54,3 @@ class FormateMsgActor(rootPath: String, fileName: String) extends Actor {
 }
 
 
-object FormateMsgActor {
-  case class FormateMsg(values: Seq[String])
-  def props(rootPath: String, fileName: String) = Props(new FormateMsgActor(rootPath, fileName))
-}

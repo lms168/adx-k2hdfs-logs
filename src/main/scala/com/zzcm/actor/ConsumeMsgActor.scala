@@ -5,9 +5,10 @@ import akka.event.Logging
 import akka.kafka.ConsumerMessage.{CommittableMessage, CommittableOffset}
 
 import com.zzcm.actor.ConsumeMsgActor.OriginMsg
-import com.zzcm.actor.FormateMsgActor.FormateMsg
 import com.zzcm.actor.OriginalMsgActor.OriginalMsg
-import com.zzcm.config.{K2hdfsConfig}
+import com.zzcm.config.K2hdfsConfig
+import com.zzcm.model.StatLogScala
+import com.zzcm.util.JsonUtil
 
 //接收的数据类型
 object ConsumeMsgActor {
@@ -25,13 +26,16 @@ class ConsumeMsgActor() extends Actor{
   private[this] implicit val system: ActorSystem = context.system
   val writeLocalConfig =  K2hdfsConfig().writeToLocalConfig
 
+  val originalSwitch = writeLocalConfig.originalSwitch
   val originalRootPath = writeLocalConfig.originalRootPath
   val originalFileName = writeLocalConfig.originalFileName
+
+
   val formateRootPath =  writeLocalConfig.formateRootPath
   val formateFileName =  writeLocalConfig.formateFileName
-
-  val originalSwitch = writeLocalConfig.originalSwitch
   val formateSwitch = writeLocalConfig.formateSwitch
+
+
 
 
   override def receive: Receive = {
@@ -44,16 +48,28 @@ class ConsumeMsgActor() extends Actor{
       val values: Seq[String] = offsetWithValue.map(_._2)
 
 
+
+
+
       //保存原始数据
       if (originalSwitch) {
-        val originalMsgActor = context.actorOf(OriginalMsgActor.props(originalRootPath, originalFileName))
+        val timeField = "createTime"   //k1的提取字段
+//        val timeField = "timestamp"      //k2的提取字段
+        val originalMsgActor = context.actorOf(OriginalMsgActor.props(originalRootPath, originalFileName, timeField))
         originalMsgActor ! OriginalMsg(values)
       }
 
       //将数据格式化后保存
       if (formateSwitch) {
-        val formateMsgActor = context.actorOf(FormateMsgActor.props(formateRootPath, formateFileName))
-        formateMsgActor ! FormateMsg(values)
+        val timeField = "createTime"   //k1的提取字段
+//        val timeField = "timestamp"      //k2的提取字段
+       val statLogScalaValues: Seq[String] =  values.flatMap(x => {
+          val statList: List[StatLogScala] = JsonUtil.toObject[List[StatLogScala]](x)
+           statList.map(x => JsonUtil.fromObject(x))
+        })
+        val originalMsgActor = context.actorOf(OriginalMsgActor.props(formateRootPath, formateFileName, timeField))
+        originalMsgActor ! OriginalMsg(statLogScalaValues)
+
       }
       sender() ! offsets
     }

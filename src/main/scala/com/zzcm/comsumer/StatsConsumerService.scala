@@ -22,10 +22,9 @@ import org.apache.kafka.common.serialization.StringDeserializer
 /**
   * Created by lms on 17-7-15.
   */
-class StatsConsumerService(implicit system: ActorSystem, materializer: Materializer, ec:ExecutionContext) {
+class StatsConsumerService(subScriptTopics: Set[String],group: String)(implicit system: ActorSystem, materializer: Materializer, ec:ExecutionContext) {
 
-  val subScriptTopics = K2hdfsConfig().consumerConfig.subScriptTopics
-  val group = K2hdfsConfig().consumerConfig.group
+
 
 
 
